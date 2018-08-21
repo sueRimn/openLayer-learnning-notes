@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>baiduMap</title>
+    <link rel="stylesheet" href="build/boostrap.css">
+    <link rel="stylesheet" href="css/ol.css">
+</head>
+<body>
+        <div id="map" style="width:100%"></div>
+        <script src="build/jquery.js"></script>
+        <script src="build/boostrap.js"></script>
+        <script src="build/ol.js"></script>
+        <script src="build/ol-debug.js"></script>
+        <script src="build/qwebchannel.js"></script>
+        <script>
+            //自定义分辨率和瓦片坐标系
+            var resolitions = [];
+            var maxZoom = 18;
+            // 计算百度使用的分辨率
+            for(var i=0; i<=maxZoom; i++){
+                resolutions[i] = Math.pow(2, maxZoom-i);
+            }
+            var tilegrid  = new ol.tilegrid.TileGrid({
+                origin: [0,0],    // 设置原点坐标
+                resolutions: resolutions    // 设置分辨率
+            });
+            // 创建百度地图的数据源
+            var baiduSource = new ol.source.TileImage({
+                projection: 'EPSG:3857',    
+                tileGrid: tilegrid,
+                tileUrlFunction: function(tileCoord, pixelRatio, proj){
+                    var z = tileCoord[0];
+                    var x = tileCoord[1];
+                    var y = tileCoord[2];
+
+                    // 百度瓦片服务url将负数使用M前缀来标识
+                    if(x<0){
+                        x = 'M' + (-x);
+                    }
+                    if(y<0){
+                        y = 'M' + (-y);
+                    }
+
+                    return "http://online0.map.bdimg.com/onlinelabel/?qt=tile&x="+x+"&y="+y+"&z="+z+"&styles=pl&udt=20160426&scaler=1&p=0";
+                }
+            });
+
+                // 百度地图层
+                var baiduMapLayer2 = new ol.layer.Tile({
+                    source: baiduSource
+                });
+
+                // 创建地图
+            new ol.Map({
+                    layers: [
+                        baiduMapLayer2
+                    ],
+                    view: new ol.View({
+                        // 设置成都为地图中心
+                        center: ol.proj.transform([104.06, 30.67], 'EPSG:4326', 'EPSG:3857'),
+                        zoom: 10
+                    }),
+                    target: 'baiduMap2'
+            });
+        </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ajaxVector</title>
+    <link rel="stylesheet" href="build/boostrap.css">
+    <link rel="stylesheet" href="css/ol.css">
+</head>
+<body>
+        <div id="map" style="width: 100%"></div>
+        <script src="build/jquery.js"></script>
+        <script src="build/boostrap.js"></script>
+        <script src="build/ol.js"></script>
+        <script src="build/ol-debug.js"></script>
+        <script src="build/qwebchannel.js"></script>
+        <script type="text/javascript">
+        
+            //创建地图
+            var map = new ol.Map({
+                layers: [
+                    new ol.layer.Tile({
+                        source: new ol.source.OSM()
+                    }),
+        
+                ],
+                view: new ol.View({ 
+                    center: ol.proj.fromLonLat([-72.980624870461128, 48.161307640513321]),
+                    zoom: 8
+                }), 
+                target: 'map'
+            });
+        
+            // 加载矢量地图
+            function addGeoJSON(src) {
+                var layer = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: (new ol.format.GeoJSON()).readFeatures(src, {     // 用readFeatures方法可以自定义坐标系
+                            dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                            featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                        })
+                    })
+                });
+                map.addLayer(layer);
+            }
+        
+            // 使用ajax获取矢量地图数据
+            $.ajax({
+                url: '../data/geojson/line-samples.geojson',
+                success: function(data, status) {
+                    // 成功获取到数据内容后，调用方法添加到地图
+                    addGeoJSON(data);
+                }
+            });
+        </script>
+</body>
+</html>

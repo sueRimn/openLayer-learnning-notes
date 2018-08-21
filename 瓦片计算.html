@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>瓦片计算</title>
+    <link rel="stylesheet" href="build/boostrap.css">
+    <link rel="stylesheet" href="css/ol.css">
+</head>
+<body>
+        <div id="map" style="width:100%"></div>
+        <script src="build/jquery.js"></script>
+        <script src="build/boostrap.js"></script>
+        <script src="build/ol.js"></script>
+        <script>
+            var osmSource = new ol.source.OSM();
+            var map = new ol.Map({
+                layers:[
+                    //加载open street map
+                    new ol.layer.Tile({
+                        source:osmSource
+                    }),
+                    //添加一个显示osm地图瓦片网格的图层
+                    new ol.layer.Tile({
+                        source:new ol.source.TileDebug({
+                            projection:'EPSG:3857',
+                            tileGrid:osmSource.getTileGrid()
+                        })
+                    })
+                ],
+                target:'map',
+                view:new ol.View({
+                    cenetr:ol.proj.transform([104,30],'EPSG:4326','EPSG:3857'),
+                    zoom:10
+                })
+            });
+
+        </script>
+    
+</body>
+</html>

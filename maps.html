@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图层叠加</title>
+    <link rel="stylesheet" href="build/boostrap.css">
+    <link rel="stylesheet" href="css/ol.css">
+</head>
+<body>
+        <div id="map" style="width:100%"></div>
+        <script src="build/jquery.js"></script>
+        <script src="build/boostrap.js"></script>
+        <script src="build/ol.js"></script>
+        <script>
+            //创建3个图层
+            var osmLayer = new ol.layer.Tile({
+                source:new ol.source.OSM()
+            });
+            var pointLayer = new ol.layer.Vector({
+                source:new ol.source.Vector()
+            });
+            var circleLayer = new ol.layer.Vector({
+                source:new ol.source.Vector()
+            });
+            
+            new ol.Map({
+                //在地图上创建三个图层，图层顺序自下而上，依次是OSM、point、circle
+                layer:[osmLayer,pointLayer,circleLayer],
+                view:new ol.View({
+                    center:[0,0],
+                    zoom:2
+                }),
+                target:'map'
+            });
+
+            //添加点
+            var point  = new ol.Feature({
+                geometry:new ol.geom.Point([0,0])
+            });
+            point.setStyle(new ol.style.Style({
+                image:new ol.style.Circle({
+                    radius:1,
+                    fill:new ol.style.Fill({
+                        color:'yellow'
+                    }),
+                    storke:new ol.style.Stroke({
+                        color:'red',
+                        size:1
+                    })
+
+                })
+            }));
+
+            //添加圆
+            var circle = new ol.Feature({
+                geometry:new ol.geom.Point([0,0])
+            });
+            circle.setStyle(new ol.style.Style({
+                image:new ol.style.Circle({
+                    radius:10,
+                    storke:new ol.style.Stroke({
+                        color:'blue',
+                        size:1
+                    })
+                })
+            }));
+
+            circleLayer.getSource().addFeature(circle);
+
+                
+            
+        </script>
+
+    
+</body>
+</html>

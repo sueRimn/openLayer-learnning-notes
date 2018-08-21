@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge,chrom=1">
+    <meta content="always name=referrer">
+    <title>加载地图</title>
+    <link rel="stylesheet" href="build/boostrap.css">
+    <link rel="stylesheet" href="css/ol.css">
+
+</head>
+<body>
+    <!-- 建立一个地图容器 -->
+    <div id="map" style="width:100%"></div>
+    <script src="build/jquery.js"></script>
+    <script src="build/boostrap.js"></script>
+    <script src="build/ol.js"></script>
+    <script>
+        //创建地图
+        new ol.Map({
+            //设置地图层
+            layers:[
+                //创建一个使用Open Street Map 地图源的瓦片图层
+                new ol.layer.Tile({
+                    source:new ol.source.OSM()
+                    })
+            ],
+            //设置显示地图的视图层
+            view:new ol.View({
+                extent:[102,29,104,31],//设置地图中心范围
+                //center:[0,0],//定义地图显示中心与经度0度，纬度0度
+                center:[104.06,30.67],//设置成都为地图中心
+                projection:'EPSG:4326',//指定投影使用EPSG：4326
+                zoom:2,       //定义地图显示层级为2
+                minZoom:10,
+                maxZoom:14
+            }),
+            //让id为map的div作为地图的容器
+            target:'map'
+        });
+    </script>
+</body>
+</html>

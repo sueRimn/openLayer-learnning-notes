@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>map</title>
+    <link rel="stylesheet" href="build/boostrap.css">
+    <link rel="stylesheet" href="css/ol.css">
+</head>
+<body>
+    <div id="map"></div>
+    <script src="build/jquery.js"></script>
+    <script src="build/boostrap.js"></script>
+    <script src="build/ol.js"></script>
+    <script src="build/ol-debug.js"></script>
+    <script src="build/qwebchannel.js"></script>
+    <script>
+         //创建地图
+    var map = new ol.Map({
+        layers: [
+            // 底图用Open Street Map 地图
+            new ol.layer.Tile({
+                source: new ol.source.OSM()
+            }),
+            // 再加载一个geojson的矢量地图
+            new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    url: '../data/geojson/line-samples.geojson',     // 地图来源
+                    format: new ol.format.GeoJSON()    // 解析矢量地图的格式化类
+                })
+             })
+            // new ol.layer.Vector({
+            //     source:new ol.source.Vector({
+            //         url:'',
+            //         format:new ol.format.GeoJSON()
+            //     })
+            // })
+        ],
+        view: new ol.View({ 
+            center: [-72.980624870461128, 48.161307640513321],
+            zoom: 8,
+            projection: 'EPSG:4326'
+        }),
+        target: 'map'
+    });
+    </script>
+    
+</body>
+</html>
