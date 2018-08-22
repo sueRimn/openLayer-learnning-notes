@@ -4,14 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>style设置图标</title>
+    <title>styleFunction的应用-layer上</title>
     <link rel="stylesheet" href="build/boostrap.css">
     <link rel="stylesheet" href="css/ol.css">
-    
+    <style>
+        #anchor{
+        width: 64px;
+        height: 64px;
+
+    }
+    </style>
 </head>
 <body>
         <div id="map" style="width:100%"></div>
-        <div id="anchor"><img id="anchorImg" src="anchor.jpg" alt="船锚"></div>
+        
         <script src="build/jquery.js"></script>
         <script src="build/boostrap.js"></script>
         <script src="build/ol.js"></script>
@@ -42,13 +48,16 @@
             var anchor = new ol.Feature({
                 geometry: new ol.geom.Point([104, 30])
             });
-            // 设置样式，在样式中就可以设置图标
-            anchor.setStyle(new ol.style.Style({
-                image: new ol.style.Icon({
-                src: '../img/anchor.png'
-                })
-            }));
-            // 添加到之前的创建的layer中去
+            //应用style function,动态地获取样式
+            anchor.setStyle(function(resolution){
+                return[new ol.style.Style({
+                    image:new ol.style.Icon({
+                        src:'anchor.jpg',
+                        size:[64,64],
+                        scale:map.getView().getZoom()/10
+                    })
+                })];
+            });
             layer.getSource().addFeature(anchor);
         </script>
     

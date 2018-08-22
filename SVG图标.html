@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SVG图标</title>
+    <link rel="stylesheet" href="build/boostrap.css">
+    <link rel="stylesheet" href="css/ol.css">
+</head>
+<body>
+        <div id="map" style="width:100%"></div>
+        <script src="build/jquery.js"></script>
+        <script src="build/boostrap.js"></script>
+        <script src="build/ol.js"></script>
+        <script src="build/ol-debug.js"></script>
+        <script src="build/qwebchannel.js"></script>
+        <script>
+            var layer = new ol.layer.Vector({
+                source: new ol.source.Vector()
+            })
+            var map = new ol.Map({
+                layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }), 
+                layer
+                ],
+                target: 'map',
+                view: new ol.View({
+                projection: 'EPSG:4326',
+                center: [104, 30],
+                zoom: 10
+                })
+            });
+
+            var anchor = new ol.Feature({
+                geometry: new ol.geom.Point([104, 30])
+            });
+
+            // 构建svg的Image对象
+            var svg = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 30 30" enable-background="new 0 0 30 30" xml:space="preserve">'+    
+            '<path fill="#156BB1" d="M22.906,10.438c0,4.367-6.281,14.312-7.906,17.031c-1.719-2.75-7.906-12.665-7.906-17.031S10.634,2.531,15,2.531S22.906,6.071,22.906,10.438z"/>'+
+            '<circle fill="#FFFFFF" cx="15" cy="10.677" r="3.291"/></svg>';
+
+                var mysvg = new Image();
+                mysvg.src = 'data:image/svg+xml,' + escape(svg);
+
+            anchor.setStyle(new ol.style.Style({
+                image: new ol.style.Icon({
+                img: mysvg,    // 设置Image对象
+                imgSize: [30, 30]    // 及图标大小
+            //          src: 'http://www.williambuck.com/portals/0/Skins/WilliamBuck2014/images/location-icon.svg',
+            //          size: [30, 30]
+                })
+            }));
+            layer.getSource().addFeature(anchor);
+        </script>
+    
+</body>
+</html>

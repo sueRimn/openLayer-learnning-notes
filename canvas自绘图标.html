@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>几何体图标</title>
+    <link rel="stylesheet" href="build/boostrap.css">
+    <link rel="stylesheet" href="css/ol.css">
+</head>
+<body>
+        <div id="map" style="width:100%"></div>
+        <script src="build/jquery.js"></script>
+        <script src="build/boostrap.js"></script>
+        <script src="build/ol.js"></script>
+        <script src="build/ol-debug.js"></script>
+        <script src="build/qwebchannel.js"></script>
+        <script>
+            var layer = new ol.layer.Vector({
+                source:new ol.source.Vector()
+            })
+            var map = new ol.Map({
+                layers:[
+                    new ol.layer.Tile({
+                        source:new ol.source.OSM()
+                    }),
+                    layer
+                ],
+                target:'map',
+                view:new ol.View({
+                    projection:'EPSG:4326',
+                    center:[104,30],
+                    zoom:10
+                })
+            });
+
+            //使用canvas绘制一个不规则几何图形
+
+            var canvas = document.createElement('canvas');
+            canvas.width = 20;
+            canvas.height = 20;
+            var context = canvas.getContext("2d");
+            context.strokeStyle ="red";
+            //context.fillStyle = 'red';?
+            context.lineWidth = 1;
+            context.beginPath();
+            context.moveTo(0,0);
+            context.lineTo(20,10);
+            context.lineTo(0,20);
+            context.lineTo(10,10);
+            context.lineTo(0,0);
+            context.stroke();
+
+            //把绘制了的canvas设置到style里面
+            var style = new ol.style.Style({
+                image:new ol.style.Icon({
+                    img:canvas,
+                    imgSize:[canvas.width,canvas.height],
+                    rotation:90*Math.PI/180
+                    
+                })
+               
+            });
+
+            //创建一个Feature
+            var shape = new ol.Feature({
+                geometry:new ol.geom.Point([104,30])
+            });
+
+            //应用具有不规则集合图形的样式到Feature
+            shape.setStyle(style);
+            layer.getSource().addFeature(shape);
+        </script>
+    
+</body>
+</html>

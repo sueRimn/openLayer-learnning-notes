@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>文字标注</title>
+    <link rel="stylesheet" href="build/boostrap.css">
+    <link rel="stylesheet" href="css/ol.css">
+</head>
+<body>
+        <div id="map" style="width:100%"></div>
+        <script src="build/jquery.js"></script>
+        <script src="build/boostrap.js"></script>
+        <script src="build/ol.js"></script>
+        <script src="build/ol-debug.js"></script>
+        <script src="build/qwebchannel.js"></script>
+        <script>
+            var layer = new ol.layer.Vector({
+                source:new ol.source.Vector()
+            })
+
+            var map= new ol.Map({
+                layers:[
+                    new ol.layer.Tile({
+                        source:new ol.source.OSM()
+                    }),
+                    layer
+                ],
+                target:'map',
+                view:new ol.View({
+                    projection:'EPSG:4326',
+                    center:[104.46,30.67],
+                    zoom:10
+                })
+
+            });
+            var anchor = new ol.Feature({
+                geometry:new ol.geom.Point([104.46,30.67])
+            });
+            //设置文字
+            anchor.setStyle(new ol.style.Style({
+                text:new ol.style.Text({
+                    text:'我在这！！',
+                    fill:new ol.style.Fill({
+                        color:'green'
+                    })
+                })
+            }));
+            layer.getSource().addFeature(anchor);
+        </script>
+    
+</body>
+</html>

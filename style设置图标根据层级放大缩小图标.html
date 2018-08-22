@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>style设置图标根据层级放大缩小图标</title>
+    <link rel="stylesheet" href="build/boostrap.css">
+    <link rel="stylesheet" href="css/ol.css">
+    <style>
+        #anchor{
+        width: 64px;
+        height: 64px;
+
+    }
+    </style>
+</head>
+<body>
+        <div id="map" style="width:100%"></div>
+        
+        <script src="build/jquery.js"></script>
+        <script src="build/boostrap.js"></script>
+        <script src="build/ol.js"></script>
+        <script src="build/ol-debug.js"></script>
+        <script src="build/qwebchannel.js"></script>
+        <script>
+           // 我们需要一个vector的layer来放置图标
+            var layer = new ol.layer.Vector({
+                source: new ol.source.Vector()
+            })
+
+            var map = new ol.Map({
+                layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }), 
+                layer
+                ],
+                target: 'map',
+                view: new ol.View({
+                projection: 'EPSG:4326',
+                center: [104, 30],
+                zoom: 10
+                })
+            });
+
+            // 创建一个Feature，并设置好在地图上的位置
+            var anchor = new ol.Feature({
+                geometry: new ol.geom.Point([104, 30])
+            });
+            // 设置样式，在样式中就可以设置图标
+            anchor.setStyle(new ol.style.Style({
+                image: new ol.style.Icon({
+                src: 'anchor.jpg',
+                imgSize:[64,64]
+                })
+            }));
+            // 添加到之前的创建的layer中去
+            layer.getSource().addFeature(anchor);
+
+            //监听地图层级变化
+            map.getView().on('change:resolution',function(){
+                var style = anchor.getStyle();
+                //重新设置图标的缩放率，基于层级10来做缩放
+                style.getImage().setScale(this.getZoom()/10);
+                anchor.setStyle(style);
+            })
+        </script>
+    
+</body>
+</html>
