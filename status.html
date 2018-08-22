@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="build/boostrap.css">
+    <link rel="stylesheet" href="css/ol.css">
+    <style>
+        #map{
+            width:100%;
+            height:100%;
+        }
+        .label,.title{
+            background: #000;
+            color:#fff;
+            padding:3px;
+        }
+        .popup-content{
+        background: #fff;
+        padding:3px;
+        }
+        .ol-popup-closer {
+            position: absolute;
+            top: 2px;
+            right: 8px;
+        }
+        .ol-popup-closer:after {
+            content: "x";
+            color: #fff;
+        }
+    </style>
+
+</head>
+<body>
+<div id="map"></div>
+<script src="build/jquery.js"></script>
+<script src="build/boostrap.js"></script>
+<script src="build/ol.js"></script>
+<script src="build/ol-debug.js"></script>
+<script src="build/qwebchannel.js"></script>
+<script>
+    $(document).ready(function(){
+        var map = new ol.Map({
+            controls: ol.control.defaults().extend([
+                new ol.control.ScaleLine({})
+            ]),
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            view: new ol.View({
+                center: ol.proj.transform([106.20, 37.30], 'EPSG:4326', 'EPSG:3857'),
+                maxZoom: 19,
+                zoom: 5
+            }),
+            logo: false
+        });//地图初始化
+        initMenuAndAllCar()
+        var carPositionLayer = new ol.layer.Vector({
+            style: function (feature, resolution) {
+                var online = feature.get("online");
+                var status;
+                switch(online){
+                    case "0":
+                        status= '离线';
+                        break;
+                    case "1":
+                        status= '在线';
+                        break;
+                    case "无法获取状态":
+                        status= online;
+                        break;
+                }
+                var opacity = (online !== "1") ? 0.4 : 1;
+                var icon_url = "image/" + feature.get("image");
+                var style = new ol.style.Style({
+                    image: new ol.style.Icon({
+                        opacity: opacity,
+                        scale: 1.2,
+                        src: icon_url
+                    })
+                });
+                feature.setStyle(style);
+                var label_element = document.createElement('div');
+                label_element.className = 'label';
+                label_element.innerHTML = status;
+                var label = new ol.Overlay({
+                    element: label_element,
+                    offset: [20, 6],
+                    stopEvent: false
+                });
+                var coordinate = feature.getGeometry().getCoordinates();
+                label.setPosition(coordinate);
+                map.addOverlay(label);
+            }
+        });// 车辆位置图层
+        map.addLayer(carPositionLayer);
+        var map_click = map.on('click', function (evt) {
+            var pixel = map.getEventPixel(evt.originalEvent);
+            var feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+                return feature;
+            });//判断当前单击处是否有要素，捕获到要素时弹出popup
+            var coordinate = evt.coordinate;
+            if (feature !== undefined) {
+                removeAllOverlay(map);
+                var popup_element = document.createElement('div');
+                popup_element.className = 'ol-popup';
+                var closer = document.createElement('a');
+                closer.href = '#';
+                closer.className = 'ol-popup-closer';
+                var title = document.createElement('div');
+                title.className = 'title';
+                var content = document.createElement('div');
+                content.className = 'popup-content';
+                $(popup_element).append(closer);
+                $(popup_element).append(title);
+                $(popup_element).append(content);
+                var info_popup = new ol.Overlay(({
+                    element: popup_element,
+                    autoPan: true,
+                    autoPanAnimation: {
+                        duration: 250   //当Popup超出地图边界时，地图移动的速度
+                    }
+                }));
+                map.addOverlay(info_popup);
+                $(closer).on('click', function (event) {
+                    event.preventDefault();
+                    info_popup.setPosition(undefined);
+                });// 点击关闭的按钮
+                var name = feature.get("name");
+                var user_contact = feature.get("user_contact");
+                var time = feature.get("time");
+                var speed = parseFloat(feature.get("speed")).toFixed(2);
+                title.innerHTML ='<div><strong></strong>'+name+'</div></div>';
+                content.innerHTML = '<div><div>联系方式:'+user_contact+'</div><div>时 刻:'+time+'</div><div>速 度'+speed+'</div></div>';
+                info_popup.setPosition(coordinate);
+            }
+        });//为map添加点击事件监听，弹出popup
+        function initMenuAndAllCar(){
+                $.ajax({
+                    url:"json/allAllPosition.json",
+                    success:function(results){
+                        var features = (new ol.format.GeoJSON()).readFeatures(results, {featureProjection: 'EPSG:3857'});
+                        var carSource = new ol.source.Vector({
+                            features: features
+                        });
+                        carPositionLayer.setSource(carSource);
+                        var extent = carSource.getExtent();
+                        map.getView().fit(extent, map.getSize(),{padding: [10,10,10,10]});
+                    }
+                });
+        }//初始化所有车的位置
+        function removeAllOverlay(map){
+            map.getOverlays().getArray().slice(0).forEach(function(overlay) {
+                map.removeOverlay(overlay);
+            });
+        }//清除所有车
+    });
+</script>
+</body>
+</html>
