@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>绘制直线</title>
+    <link rel="stylesheet" href="build/boostrap.css">
+    <link rel="stylesheet" href="css/ol.css">
+</head>
+<body>
+        <div id="map" style="width:100%"></div>
+        <input type="button" value="取消选中" onclick="unselectFeature();">
+        <script src="build/jquery.js"></script>
+        <script src="build/boostrap.js"></script>
+        <script src="build/ol.js"></script>
+        <script src="build/ol-debug.js"></script>
+        <script src="build/qwebchannel.js"></script>
+        <script>
+            var map = new ol.Map({
+            layers: [
+            new ol.layer.Tile({
+                source: new ol.source.OSM()
+            })
+            ],
+            target: 'map',
+            view: new ol.View({
+            center: ol.proj.transform(
+                [104, 30], 'EPSG:4326', 'EPSG:3857'),
+            zoom: 10
+            })
+        });
+
+        // 添加一个绘制的线使用的layer
+        var lineLayer = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    size: 1
+                })
+            })
+        })
+        map.addLayer(lineLayer);
+        var lineDraw = new ol.interaction.Draw({
+            type: 'LineString',
+            source: lineLayer.getSource(),    // 注意设置source，这样绘制好的线，就会添加到这个source里
+            style: new ol.style.Style({            // 设置绘制时的样式
+                stroke: new ol.style.Stroke({
+                    color: '#009933',
+                    size: 1
+                })
+            }),
+            maxPoints: 4    // 限制不超过4个点
+        });
+
+        // 监听线绘制结束事件，获取坐标
+        lineDraw.on('drawend', function(event){
+            // event.feature 就是当前绘制完成的线的Feature
+            document.getElementById('points').innerHTML = JSON.stringify(event.feature.getGeometry().getCoordinates());
+        });
+
+        map.addInteraction(lineDraw);
+        
+        </script>
+    
+</body>
+</html>

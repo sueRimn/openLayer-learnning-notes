@@ -10,6 +10,7 @@
 </head>
 <body>
         <div id="map" style="width:100%"></div>
+        <input type="button" value="取消选中" onclick="unselectFeature();">
         <script src="build/jquery.js"></script>
         <script src="build/boostrap.js"></script>
         <script src="build/ol.js"></script>
@@ -17,48 +18,54 @@
         <script src="build/qwebchannel.js"></script>
         <script>
             var layer = new ol.layer.Vector({
-                source:new ol.source.Vector(),
-                //把feature上的style，直接移到layer上，避免直接在feature上设置style
-                style:new ol.style.Style({
-                    image:new ol.style.Circle({
-                        radius:10,
-                        fill:new ol.style.Fill({
-                            color:'yellow'
-                        })
+            source: new ol.source.Vector(),
+            style: new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 10,
+                    fill: new ol.style.Fill({
+                        color: 'red'
                     })
                 })
-            });
-            var map = new ol.Map({
-                layers:[
-                    new ol.layer.Tile({
-                        source:new ol.source.OSM()
-                    }),
-                    layer
-                ],
-                target:'map',
-                view:new ol.View({
-                    center:ol.proj.transform([140,30],'EPSG:4326','EPSG:3857'),
-                    zoom:10
-                })
-            });
-            //在地图上画一个圆
-            var circle = new ol.Feature({
-                geomtry:new ol.geom.Point(ol.proj.transform([140,30],'EPSG:4326','EPSG:3857'))
             })
-            //此处不再为feature设置style
-            layer.getSource().addFeature(circle);
-            //添加一个用于选择feature的交互方式
-            map.addInteraction(new ol.interaction.Select({
-                //设置选中后的style
-                style:new ol.style.Style({
-                    image:new ol.style.Circle({
-                        radius:10,
-                        fill:new ol.style.Fill({
-                            color:'green'
-                        })
+        });
+        var map = new ol.Map({
+            layers: [
+            new ol.layer.Tile({
+                source: new ol.source.OSM()
+            }), 
+            layer
+            ],
+            target: 'map',
+            view: new ol.View({
+            center: ol.proj.transform(
+                [104, 30], 'EPSG:4326', 'EPSG:3857'),
+            zoom: 10
+            })
+        });
+
+        // 在地图上添加一个圆
+        var circle = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.transform(
+                [104, 30], 'EPSG:4326', 'EPSG:3857'))
+        })
+        layer.getSource().addFeature(circle);
+
+        // 添加一个用于选择Feature的交互方式
+        var clickSelect = new ol.interaction.Select({
+            style: new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 10,
+                    fill: new ol.style.Fill({
+                        color: 'blue'
                     })
                 })
-            }));
+            })
+        });
+        map.addInteraction(clickSelect);
+
+            function unselectFeature(){
+                map.removeInteraction(clickSelect);
+            }
         </script>
     
 </body>
